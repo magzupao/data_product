@@ -1,0 +1,101 @@
+---
+title: "Final Project Data Product"
+author: "Marco Guado"
+date: "September 15, 2016"
+output: "slidy_presentation"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Resumen
+
+The Shiny application to be developed is based on the final project (1) presented in machine learning course.
+This project is to implement a model to predict what the best routine to perform an exercise with weights.
+<br/>  
+<br/>  
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+(1) url Project used machine learning
+[final] (<http://htmlpreview.github.io/?https://github.com/magzupao/machine_learning/blob/master/project_machine_learning_magz.html>)  
+  
+  
+
+## Modelo
+
+Our initial model consists of 5 measurements recorded by sensors placed; wrist, forearm and arm several people. Where A is better and E is the worst routine.<br/>
+
+Classification:<br/>
+A<br/>
+B<br/>
+C<br/>
+D<br/>
+E<br/>
+
+It was recorded for each user samples were grouped in a matrix composed of data of 160 variables and 19622 records.             
+
+
+
+## Process
+
+```{r cars, include=FALSE}
+url_data_training <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv";
+url_data_testing <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv";
+
+df_training <- read.csv(url(url_data_training));
+df_testing <- read.csv(url(url_data_testing));
+
+tmp_df_training <- df_training[, c(8:160)];
+tmp_df_testing <- df_testing[, c(8:160)];
+
+#Clean data
+not.na <- function(){
+    pos_columns <- c()
+    for(column in c(1:153)){
+        exist.na <- sum(is.na(tmp_df_testing[,column]))
+        if(20 == exist.na ){
+            #print("exist")
+        }else{
+            #print("not exist")
+            pos_columns <- c(pos_columns, column)
+        }       
+    }
+    return(pos_columns)
+}
+
+columns <- not.na();
+
+#We create two new data set that will be used for analysis
+new_df_training <- tmp_df_training[, columns];
+new_df_testing <- tmp_df_testing[, columns];
+
+library(randomForest);
+
+df_model<-randomForest(classe ~ ., data=new_df_training, ntree=30, mtry=6, replace=T);
+
+
+```
+
+After processing (data cleaning) the model, we have a data matrix consisting of 53 variables and records 19622. where we have:<br/>
+<br/>
+52 -> variables predictors<br/>
+1  -> variable discriminant<br/>
+<br/>
+<br/>
+Based on the analysis model where we have quantitative and qualitative variables can solve a case prediction algorithm using the Random Forest.
+
+
+## Results
+
+Our model with a value of tree = 30 ---> 100 is stable, and has a very low tracking error, which is reliable.
+
+```{r df_model}
+plot(df_model)
+```
+
+
